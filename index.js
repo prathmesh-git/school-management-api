@@ -1,9 +1,16 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
-require("dotenv").config();
+
+// Only load .env locally (Railway already provides env vars)
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const schoolRoutes = require("./routes/schools");
+
+// Debug log to check what DB_MODE is set to
+console.log("DB_MODE:", process.env.DB_MODE);
 
 let dbConfig;
 
@@ -25,6 +32,7 @@ if (process.env.DB_MODE === "local") {
     ssl: { rejectUnauthorized: true },
   };
 } else {
+  console.error(`Invalid DB_MODE: "${process.env.DB_MODE}"`);
   throw new Error("Invalid DB_MODE in .env. Use 'local' or 'tidb'.");
 }
 
